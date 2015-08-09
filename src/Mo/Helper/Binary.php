@@ -93,12 +93,26 @@ class Binary {
 	
 	/**
 	 * Binary data to Base 10
-	 * Not safe for calculations
+	 * Not safe for normal calculations
+	 * Uses bc functions
 	 * 
-	 * @return float|int
+	 * @return string
 	 */
 	public function toDecimal() {
-		return hexdec($this->toHex());
+		$ret		= '';
+		
+		$data	= str_split($this->toHex(), 1);
+		$len	= count($data);
+		$i		= 0;
+		
+		foreach($data as $char)
+			$ret = bcadd($ret, // sum of current val and ...
+					bcmul( // the product of ...
+						array_search($char, ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f']), // the value of a hex char [0==0 ... f==15]
+						bcpow(16, $len - $i++) // the significance of that bit
+					));
+	
+		return ltrim($ret, '0');
 	}
 	
 	/**
@@ -109,6 +123,54 @@ class Binary {
 	 */
 	public function unpack($format) {
 		return unpack($format, $this->data);
+	}
+	
+	/**
+	 * Convert to any base to a given string format
+	 * 
+	 * @todo add quick function for base conversion with a multiple of 2 chars
+	 * @link http://php.net/manual/en/function.base-convert.php#106546
+	 * @param string $toBaseInput '01' is normal binary, '0123456789' is our normal decimal
+	 * @return string
+	 */
+	public function convBase($toBaseInput) {
+		// quick conversion test
+		$quick = null;
+		switch(strlen($toBaseInput)) {
+		case 1:
+		case 0:
+			throw new \Exception('Base must be minimum of 2');
+		case 2:
+			$quick = $this->toBinary();
+			break;
+		case 8:
+			$quick = $this->toOctal();
+			break;
+		case 10:
+			$quick = $this->toDecimal();
+			break;
+		case 16:
+			$quick = $this->toHex();
+			break;
+		}
+		
+		// slow conversion
+		if(empty($quick)) {
+			$toBase		= str_split($toBaseInput, 1);
+			$len		= count($toBase);
+			$base10		= $this->toDecimal();
+			$ret		= '';
+			
+			do {
+				$ret	= $toBase[ bcmod($base10, $len) ] . $ret; // prepend with modulo of base 10 and new base length
+				$base10 = bcdiv($base10, $len, 0); // divide base 10 by length round down
+			} while($base10 != 0);
+		
+			return $ret;
+		} else
+			$ret = strtr($quick, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', $toBaseInput);
+		
+		return $ret;
 	}
 
 
