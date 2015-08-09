@@ -1,0 +1,20 @@
+{
+    "name": "mothepro/mo-helper",
+    "description": "A Bunch of helper classes!",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Maurice Prosper",
+            "email": "maurice.prosper@ttu.edu"
+        }
+    ],
+    "require": {
+		"php": ">=5.4.0",
+		"nette/neon": "*"
+	},
+	"autoload": {
+		"psr-0": {
+			"Mo": "src/"
+		}
+	}
+}
