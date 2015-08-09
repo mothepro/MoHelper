@@ -68,12 +68,24 @@ class Binary {
 	}
 	
 	/**
-	 * Binary data to Binary
+	 * Binary representation
 	 * @return string
 	 */
 	public function toBinary() {
 		$ret = '';
 		foreach(str_split($this->toHex(), 1) as $char)
+			$ret .= str_pad(base_convert ($char, 16, 2), 4, '0', STR_PAD_LEFT);
+		
+		return $ret;
+	}
+	
+	/**
+	 * Octal format
+	 * @return string
+	 */
+	public function toOctal() {
+		$ret = '';
+		foreach(str_split($this->toHex(), 3) as $char)
 			$ret .= str_pad(base_convert ($char, 16, 2), 4, '0', STR_PAD_LEFT);
 		
 		return $ret;
