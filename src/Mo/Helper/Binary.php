@@ -46,7 +46,7 @@ class Binary {
 	 */
 	public function __construct($data = null, $base = 16) {
 		if($base !== 16)
-			$data = base_convert ($data, $base, 16);
+			$data = static::fromBase($data, $base);
 
 		$this->data = pack('H*', $data);
 	}
@@ -141,7 +141,7 @@ class Binary {
 	 * @param string $toBaseInput '01' is normal binary, '0123456789' is our normal decimal
 	 * @return string
 	 */
-	public function convBase($toBaseInput) {
+	public function toBase($toBaseInput) {
 		// quick conversion test
 		$quick = null;
 		switch(strlen($toBaseInput)) {
@@ -180,7 +180,22 @@ class Binary {
 		
 		return $ret;
 	}
-
+	
+	/**
+	 * From a base to hex
+	 * @param string $data binary number/data
+	 * @param int $base base to convert from
+	 */
+	protected static function fromBase($data, $base) {
+		if($base <= 1)
+			throw new \Exception('Base must be minimum of 2');
+		
+		if($base <= 32)
+			return base_convert ($data, $base, 16);
+		
+		else
+			throw new \Exception('Base is too large to convert from. Must be less than 32.');
+	}
 
 	/**
 	 * Creates a random binary patter
