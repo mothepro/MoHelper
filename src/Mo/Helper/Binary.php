@@ -56,7 +56,15 @@ class Binary {
 	 * @return string
 	 */
 	public function toHex($prefix = false) {
-		return ($prefix ? '0x' : null) . unpack('H*hex', $this->data)['hex'];
+		return unpack('H*hex', $this->data)['hex'];
+	}
+	
+	/**
+	 * HEX representation of data
+	 * @return string
+	 */
+	public function toNiceHex() {
+		return '0x' . strtoupper ($this->toHex());
 	}
 	
 	/**
